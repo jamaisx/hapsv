@@ -74,10 +74,27 @@ class LuceGasItaliaSensor(SensorEntity):
         try:
             response = requests.get(self._url, headers=headers, timeout=15)
             # ... (qui tieni la tua logica di scraping con BeautifulSoup) ...
+            matrix = []
+            table = soup.find('table')
+            if table:
+                rows = table.find_all('tr')
+                for row in rows:
+                    cells = row.find_all('td')
+                    data = [cell.get_text(strip=True).replace('\xa0', ' ') for cell in cells]
+                    if len(data) >= 2 and "MESE" not in data[0]:
+                        try:
+                            p_float = float(data[1].replace(',', '.'))
+                            matrix.append({"month": data[0], "price": p_float})
+                        except (ValueError, IndexError):
+                            continue
             
-            # Esempio semplificato del risultato dello scraping
-            # self._state = valore_estratto
-            # self._history = lista_estratta
-            
+            if matrix:
+                # AGGIORNAMENTO STATO: Usiamo l'attributo nativo
+                self._state = matrix[0]["price"]
+                self._history = matrix
+                _LOGGER.info("Scraping completato: %s = %s", self._name, self._state)
+            else:
+                _LOGGER.warning("Scraping riuscito ma nessuna tabella dati trovata")
+                                       
         except Exception as e:
             _LOGGER.error("Errore durante l'aggiornamento di %s: %s", self._name, e)
