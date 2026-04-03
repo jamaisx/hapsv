@@ -1,0 +1,12 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Luce e Gas Italia",
+        "description": "Vuoi configurare i sensori per i prezzi PSV?"
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "L'integrazione è già configurata."
+    }
+  }
