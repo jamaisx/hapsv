@@ -1,0 +1,10 @@
+{
+  "domain": "luce_gas_italia",
+  "name": "Luce e Gas Italia Prezzi PSV",
+  "documentation": "https://jamaisx.github.com/hapsv",
+  "dependencies": [],
+  "codeowners": ["jamaisx@gmail.com"],
+  "requirements": ["beautifulsoup4==4.12.3", "requests==2.31.0"],
+  "version": "1.0.0",
+  "iot_class": "cloud_polling"
+}
