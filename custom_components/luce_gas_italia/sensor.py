@@ -16,7 +16,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     sensors = [
         LuceGasItaliaSensor(
             "PSV Gas", 
-            "https://luceegasitalia.it", 
+            "https://luceegasitalia.it/indici-pun-e-psv/psv/", 
             "€/Smc",
             config_entry.entry_id
         ),
