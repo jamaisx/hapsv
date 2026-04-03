@@ -1,20 +1,22 @@
-import logging
 from datetime import timedelta
+import logging
 import requests
 from bs4 import BeautifulSoup
 
 from homeassistant.components.sensor import SensorEntity
-from homeassistant.helpers.event import async_track_time_interval
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
-SCAN_INTERVAL = timedelta(hours=12) # Controlla i dati ogni 12 ore
+
+# Questa variabile ora verrà usata da Home Assistant
+SCAN_INTERVAL = timedelta(hours=12)
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Configurazione sensori via interfaccia UI."""
     sensors = [
-        LuceGasItaliaSensor("PSV Gas", "https://luceegasitalia.it/indici-pun-e-psv/psv/", "€/Smc"),
+        LuceGasItaliaSensor("PSV Gas", "https://luceegasitalia.it", "€/Smc"),
     ]
+    # 'True' forza il primo aggiornamento immediato al caricamento
     async_add_entities(sensors, True)
 
 class LuceGasItaliaSensor(SensorEntity):
@@ -24,6 +26,8 @@ class LuceGasItaliaSensor(SensorEntity):
         self._unit = unit
         self._state = None
         self._history = []
+        # Unique ID è fondamentale per gestire l'entità dall'interfaccia
+        self._attr_unique_id = f"{DOMAIN}_{name.lower().replace(' ', '_')}"
 
     @property
     def name(self):
@@ -42,29 +46,19 @@ class LuceGasItaliaSensor(SensorEntity):
         return {"history": self._history}
 
     def update(self):
-        """Metodo per recuperare i dati (Scraping)."""
+        """
+        Metodo invocato da Home Assistant ogni SCAN_INTERVAL.
+        Essendo un metodo sincrono (requests), HA lo esegue in un thread separato.
+        """
+        _LOGGER.debug("Aggiornamento dati per %s...", self._name)
         headers = {'User-Agent': 'Mozilla/5.0'}
         try:
             response = requests.get(self._url, headers=headers, timeout=15)
-            soup = BeautifulSoup(response.text, 'html.parser')
+            # ... (qui tieni la tua logica di scraping con BeautifulSoup) ...
             
-            matrix = []
-            table = soup.find('table')
-            if table:
-                rows = table.find_all('tr')
-                for row in rows:
-                    cells = row.find_all('td')
-                    data = [cell.get_text(strip=True).replace('\xa0', ' ') for cell in cells]
-                    if len(data) >= 2 and "MESE" not in data[0]:
-                        try:
-                            p_float = float(data[1].replace(',', '.'))
-                            matrix.append({"month": data[0], "price": p_float})
-                        except ValueError:
-                            continue
+            # Esempio semplificato del risultato dello scraping
+            # self._state = valore_estratto
+            # self._history = lista_estratta
             
-            if matrix:
-                self._state = matrix[0]["price"]
-                self._history = matrix
-                _LOGGER.debug("Dati aggiornati per %s", self._name)
         except Exception as e:
-            _LOGGER.error("Errore durante lo scraping di %s: %s", self._name, e)
+            _LOGGER.error("Errore durante l'aggiornamento di %s: %s", self._name, e)
