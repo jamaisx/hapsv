@@ -5,15 +5,15 @@ from bs4 import BeautifulSoup
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.helpers.event import async_track_time_interval
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(hours=12) # Controlla i dati ogni 12 ore
 
-async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
-    """Configurazione dei sensori."""
+async def async_setup_entry(hass, config_entry, async_add_entities):
+    """Configurazione sensori via interfaccia UI."""
     sensors = [
-        LuceGasItaliaSensor("PSV Gas", "https://luceegasitalia.it/indici-pun-e-psv/psv/", "€/Smc"),
-        # Puoi aggiungere qui il sensore PUN in futuro puntando alla sua URL
+        LuceGasItaliaSensor("PSV Gas", "https://luceegasitalia.it", "€/Smc"),
     ]
     async_add_entities(sensors, True)
 
