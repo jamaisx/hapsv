@@ -14,20 +14,39 @@ SCAN_INTERVAL = timedelta(hours=12)
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Configurazione sensori via interfaccia UI."""
     sensors = [
-        LuceGasItaliaSensor("PSV Gas", "https://luceegasitalia.it", "€/Smc"),
+        LuceGasItaliaSensor(
+            "PSV Gas", 
+            "https://luceegasitalia.it", 
+            "€/Smc",
+            config_entry.entry_id
+        ),
     ]
-    # 'True' forza il primo aggiornamento immediato al caricamento
     async_add_entities(sensors, True)
 
 class LuceGasItaliaSensor(SensorEntity):
-    def __init__(self, name, url, unit):
+    def __init__(self, name, url, unit, entry_id):
         self._name = name
         self._url = url
         self._unit = unit
+        self._entry_id = entry_id # ID della configurazione
         self._state = None
         self._history = []
-        # Unique ID è fondamentale per gestire l'entità dall'interfaccia
-        self._attr_unique_id = f"{DOMAIN}_{name.lower().replace(' ', '_')}"
+        
+        # Questo permette a HA di gestire l'entità (Aree, Rinomina, Icone)
+        # Usiamo l'ID dell'entry per garantire l'univocità
+        self._attr_unique_id = f"{entry_id}_{name.lower().replace(' ', '_')}"
+        
+        # Opzionale: Collega il sensore a un "Dispositivo" unico
+        self._attr_device_info = {
+            "identifiers": {(DOMAIN, entry_id)},
+            "name": "Luce e Gas Italia",
+            "manufacturer": "Luce e Gas Italia",
+        }
+
+    @property
+    def unique_id(self):
+        """Ritorna l'ID univoco dell'entità."""
+        return self._attr_unique_id
 
     @property
     def name(self):
