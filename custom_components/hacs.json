@@ -1,0 +1,7 @@
+{
+  "name": "Luce e Gas Italia",
+  "content_type": "integration",
+  "render_readme": true,
+  "zip_release": false,
+  "homeassistant": "2024.1.0"
+}
