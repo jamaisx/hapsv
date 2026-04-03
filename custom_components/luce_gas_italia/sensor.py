@@ -73,7 +73,7 @@ class LuceGasItaliaSensor(SensorEntity):
         headers = {'User-Agent': 'Mozilla/5.0'}
         try:
             response = requests.get(self._url, headers=headers, timeout=15)
-            # ... (qui tieni la tua logica di scraping con BeautifulSoup) ...
+            soup = BeautifulSoup(response.text, 'html.parser')
             matrix = []
             table = soup.find('table')
             if table:
@@ -92,7 +92,7 @@ class LuceGasItaliaSensor(SensorEntity):
                 # AGGIORNAMENTO STATO: Usiamo l'attributo nativo
                 self._state = matrix[0]["price"]
                 self._history = matrix
-                _LOGGER.info("Scraping completato: %s = %s", self._name, self._state)
+                _LOGGER.warning("Scraping completato: %s = %s", self._name, self._state)
             else:
                 _LOGGER.warning("Scraping riuscito ma nessuna tabella dati trovata")
                                        
