@@ -1,9 +1,14 @@
-"""Integrazione Luce e Gas Italia."""
-import logging
+from homeassistant.core import HomeAssistant
+from homeassistant.config_entries import ConfigEntry
+from .const import DOMAIN
 
-_LOGGER = logging.getLogger(__name__)
-DOMAIN = "luce_gas_italia"
-
-async def async_setup(hass, config):
-    """Set up del componente via YAML (opzionale)."""
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Set up da Config Flow."""
+    hass.async_create_task(
+        hass.config_entries.async_forward_entry_setup(entry, "sensor")
+    )
     return True
+
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Rimuovi l'integrazione."""
+    return await hass.config_entries.async_forward_entry_unload(entry, "sensor")
