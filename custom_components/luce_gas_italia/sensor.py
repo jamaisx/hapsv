@@ -12,7 +12,7 @@ SCAN_INTERVAL = timedelta(hours=12) # Controlla i dati ogni 12 ore
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Configurazione dei sensori."""
     sensors = [
-        LuceGasItaliaSensor("PSV Gas", "https://luceegasitalia.it/indici-pun-e-psv/psv/", "€/Smc"),
+        LuceGasItaliaSensor("PSV Gas", "https://luceegasitalia.it/indici-pun-e-psv/psv/", "â‚¬/Smc"),
         # Puoi aggiungere qui il sensore PUN in futuro puntando alla sua URL
     ]
     async_add_entities(sensors, True)
